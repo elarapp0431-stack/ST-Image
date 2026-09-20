@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, nextTick, ref, watch } from 'vue';
+import { computed, ref, watch } from 'vue';
 import { matchArtist, planArtistRemoval } from '@/backends/naiArtistLib';
 import { BUILTIN_NAI_ARTISTS } from '@/backends/nai';
 import BbiTextarea from '@/components/BbiTextarea.vue';
@@ -47,17 +47,17 @@ const selected = ref<ReadonlySet<string>>(new Set());
 const scrollEl = ref<HTMLDivElement | null>(null);
 
 // 每次打开回到干净状态:搜索词与勾选都是「这一轮管理」的临时态,不该跨次残留。
-// 打开后自动滚动到当前正在使用的画师串。
+// 打开后等弹窗进场动画(0.15s)结束再滚动到当前正在使用的画师串。
 watch(
   () => props.open,
   open => {
     if (!open) return;
     search.value = '';
     selected.value = new Set();
-    nextTick(() => {
+    setTimeout(() => {
       const el = scrollEl.value?.querySelector('.am-card.is-active');
       if (el) el.scrollIntoView({ block: 'nearest' });
-    });
+    }, 200);
   },
 );
 
